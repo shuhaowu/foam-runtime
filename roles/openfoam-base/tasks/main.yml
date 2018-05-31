@@ -1,4 +1,26 @@
 ---
+- name: install pre-requisite packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - software-properties-common
+  become: yes
+
+- name: openfoam repository
+  apt_repository:
+    repo: "deb http://dl.openfoam.org/ubuntu {{ ansible_distribution_release }} main"
+    state: present
+  become: yes
+
+- name: openfoam repo gpg key
+  apt_key:
+    id: 8B29D817
+    url: http://dl.openfoam.org/gpg.key
+    state: present
+  become: yes
+
 - name: installing dependent packages
   apt:
     name: "{{ item }}"
@@ -31,6 +53,19 @@
     - etc/hosts
     - etc/mpi-hosts
   become: yes
+
+- name: setup openfoam run files
+  template:
+    src: "{{ item }}"
+    dest: "/{{ item }}"
+    mode: 0755
+  become: yes
+  with_items:
+    - etc/profile.d/openfoam.sh
+    - usr/local/bin/runfoam
+    - usr/local/bin/mpifoam
+    - usr/local/bin/mpifoam-tmux
+    - usr/local/bin/deploy-ofvm
 
 - include_tasks: master.yml
   when: foam_runtime_master

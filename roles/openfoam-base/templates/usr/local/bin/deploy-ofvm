@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+source /opt/ofvm/ofvm.bash
+
+ofvm tar > /tmp/ofvm.tar.gz
+
+tail -n +2 /etc/mpi-hosts | while read host; do
+  if [ -z "$host" ]; then
+    continue
+  fi
+
+  host=$(echo $host | cut -f 1 -d " ")
+  copy_command="scp /tmp/ofvm.tar.gz $host:/tmp"
+  echo + $copy_command
+  $copy_command
+
+  untar_command="ssh $host sudo bash -c 'rm -rf /opt/ofvm && tar xzf /tmp/ofvm.tar.gz -C /opt'"
+  echo + $untar_command
+  $untar_command
+
+  listcommand="ssh $host bash -l -c 'ofvm list'"
+  echo + $listcommand
+  $listcommand
+done
+
+rm /tmp/ofvm.tar.gz

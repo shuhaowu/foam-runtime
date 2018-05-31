@@ -34,3 +34,19 @@
   with_items:
     - id_rsa
     - id_rsa.pub
+
+- name: installing ofvm
+  git:
+    repo: https://github.com/shuhaowu/ofvm.git
+    dest: /opt/ofvm
+    force: yes
+    update: yes
+  become: yes
+
+- name: changing permissions
+  file:
+    path: /opt/ofvm
+    owner: "{{ foam_user }}"
+    group: "{{ foam_user }}"
+    recurse: yes
+  become: true

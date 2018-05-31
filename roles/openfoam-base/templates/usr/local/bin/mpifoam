@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -z "$TMUX" ]; then
+  echo "WARNING: tmux is not being used to run this command."
+  echo "WARNING: without tmux or another nohup solution, the command will be"
+  echo "WARNING: shutdown if the ssh session closes."
+fi
+
+if [ -z "$J" ]; then
+  echo "ERROR: must specify environment variable J=num mpi-foam COMMAND" >&2
+  exit 1
+fi
+
+logfile=foam-$(date +"%Y_%m_%d_%H_%M_%S").log
+
+echo "Logs for this run will be saved in $logfile and outputted to the screen"
+
+mpirun -np $J --hostfile /etc/mpi-hosts /usr/local/bin/runfoam "$@" | ts | tee $logfile
