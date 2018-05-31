@@ -2,9 +2,8 @@
 
 set -e
 
-source /opt/ofvm/ofvm.bash
-
-ofvm tar > /tmp/ofvm.tar.gz
+echo "Exporting current installations..."
+tar czf - -C /opt ofvm | pv > /tmp/ofvm.tar.gz
 
 tail -n +2 /etc/mpi-hosts | while read host; do
   if [ -z "$host" ]; then

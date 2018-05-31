@@ -28,7 +28,10 @@
     state: latest
   with_items:
     - moreutils # for `ts`
+    - pv
     - tmux
+    - htop
+    - nethogs
     # Compilation dependencies below
     - bison
     - build-essential
