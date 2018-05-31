@@ -1,0 +1,39 @@
+---
+- name: installing dependent packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+  with_items:
+    - moreutils # for `ts`
+    - tmux
+    # Compilation dependencies below
+    - bison
+    - build-essential
+    - cmake
+    - flex
+    - git-core
+    - libboost-system-dev
+    - libboost-thread-dev
+    - libncurses-dev
+    - libopenmpi-dev
+    - libreadline-dev
+    - libxt-dev
+    - openmpi-bin
+    - zlib1g-dev
+  become: yes
+
+- name: templating settings
+  template:
+    src: "{{ item }}"
+    dest: "/{{ item }}"
+  with_items:
+    - etc/hosts
+    - etc/mpi-hosts
+  become: yes
+
+- include_tasks: master.yml
+  when: foam_runtime_master
+
+- include_tasks: slave.yml
+  when: not foam_runtime_master

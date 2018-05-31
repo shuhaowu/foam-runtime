@@ -1,0 +1,24 @@
+---
+- name: installing packages for master node
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - nfs-common
+  become: yes
+
+- name: mount nfs directory from master
+  mount:
+    path: "{{ foam_run_basedir }}"
+    src: "{{ groups['master'][0] }}:{{ foam_run_basedir }}"
+    fstype: nfs
+    state: mounted
+  become: true
+
+- name: setting ssh access
+  authorized_key:
+    user: "{{ foam_user }}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - id_rsa.pub

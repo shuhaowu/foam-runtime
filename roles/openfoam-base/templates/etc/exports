@@ -1,0 +1,1 @@
+{{ foam_run_basedir }} {% for host in groups['slaves'] %}{{ host }}(rw,) {% endfor %}

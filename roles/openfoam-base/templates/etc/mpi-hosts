@@ -1,0 +1,4 @@
+{{ groups["master"][0] }} slots={{ hostvars[groups["master"][0]]["cpu_count"] }}
+{% for slave in groups["slaves"] %}
+{{ slave }} slots={{ hostvars[slave]["cpu_count"] }}
+{% endfor %}

@@ -1,0 +1,13 @@
+127.0.0.1 localhost
+127.0.1.1 {{ inventory_hostname }}
+127.0.1.1 {{ ansible_fqdn }}
+
+{% if inventory_hostname != groups["master"][0] %}
+{{ hostvars[groups["master"][0]]["ansible_ssh_host"] }} {{ groups["master"][0] }}
+{% endif %}
+
+{% for slave in groups["slaves"] %}
+{% if inventory_hostname != slave %}
+{{ hostvars[slave]["ansible_ssh_host"]  }} {{ slave }}
+{% endif %}
+{% endfor %}

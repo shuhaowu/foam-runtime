@@ -1,0 +1,36 @@
+---
+- name: installing packages for master node
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - nfs-kernel-server
+  become: yes
+
+- name: creating OpenFOAM directory
+  file:
+    path: "{{ foam_run_basedir }}"
+    state: directory
+
+- name: templating nfs exports
+  template:
+    src: etc/exports
+    dest: /etc/exports
+  become: yes
+  register: nfs_export
+
+- name: restarting nfs-server
+  systemd:
+    name: nfs-server.service
+    state: restarted
+  when: nfs_export.changed
+  become: true
+
+- name: copying ssh keys
+  copy:
+    src: "{{ item }}"
+    dest: "/home/{{ foam_user }}/.ssh/{{ item }}"
+    mode: 0600
+  with_items:
+    - id_rsa
+    - id_rsa.pub
